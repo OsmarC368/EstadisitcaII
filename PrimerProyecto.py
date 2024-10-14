@@ -14,6 +14,21 @@ class tableRow():
         self.fixi = 0
         self.fixi2 = 0
 
+# dic = {
+#     'li': 0,
+#     'ls': 0,
+#     'fi': 0,
+#     'fir': 0,
+#     'firP': 0,
+#     'fa': 0,
+#     'far': 0,
+#     'farP': 0,
+#     'xi': 0,
+#     'fixi': 0,
+#     'fixi2': 0
+
+# }
+
 testData =  [
                 30,	46,	71,	66,	34,	95,	50,	69,	31,	55,	42,	65,	75,	77,	32,	87,	75,	89,	31,	54,
                 63,	95,	35,	86,	80,	47,	90,	82,	53,	58,	48,	66,	78,	78, 38,	82,	75,	31,	80,	79,
@@ -31,20 +46,6 @@ testData =  [
 
 table = []
 
-
-def findXmax(data):
-    xMax = 0
-    for value in data:
-        if value > xMax:
-            xMax = value
-    return xMax
-
-def findXmin(data):
-    xMin = 9999999999999999 * 9999999999999
-    for value in data:
-        if value < xMin:
-            xMin = value
-    return xMin
 
 def tableClasses(xMin, k, a):
      
@@ -108,12 +109,39 @@ def arithAverage(n):
     x = acum / n
     return x
 
+def median(n, a):
+    temp = n/2
+    index = 0
+    for i, row in enumerate(table):
+        if row.fa >= temp:
+            index = i
+            break
+    li = table[index].li
+    fi = table[index].fi
+    Fi = (index < 0) if 0 else table[index-1].fa
+    return li + (((temp - Fi) / fi) * a)
+
+def modas(n, a):
+    moda = 0
+    # index = []
+    result = []
+    for row in table:
+        if row.fi > moda:
+            moda = row.fi
+
+    for i, row in enumerate(table):
+        if row.fi == moda:
+            d1 = row.fi - ((i < 0) if 0 else table[i-1].fi)
+            d2 = row.fi - ((i > len(table)) if 0 else table[i+1].fi)
+            result.append(row.li + ((d1 / d1 + d2) * a))
+    return result
+    
 
 
 def fillTable(data):
     n = len(data)
-    xMax = findXmax(data)
-    xMin = findXmin(data)
+    xMax = max(data)
+    xMin = min(data)
     r = xMax - xMin + 1
     k = round(1 + 3.3*math.log10(n))
     a = round(r / k)
@@ -128,10 +156,15 @@ def fillTable(data):
     calcFiXi()
     calcFiXi2()
     x = arithAverage(n)
-
+    me = median(n, a)
+    mo = modas(n, a)
+    
     for row in table:
         print(str(row.li) + "-" + str(row.ls) + "  " + str(row.fi) + "  " + str(row.fa) + " " + str(row.xi), str(row.fixi))
     print(" media aritmetica: " +  str(x))
+    print(" mediana: " +  str(me))
+    print(" Moda: " + str(mo[0]))
+
 
 
 
