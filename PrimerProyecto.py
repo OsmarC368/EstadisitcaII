@@ -133,16 +133,34 @@ def modas(n, a):
         if row.fi == moda:
             d1 = row.fi - ((i < 0) if 0 else table[i-1].fi)
             d2 = row.fi - ((i > len(table)) if 0 else table[i+1].fi)
-            result.append(row.li + ((d1 / d1 + d2) * a))
+            result.append(row.li + ((d1 / (d1 + d2)) * a))
     return result
     
+def percentil(n, a, k, div):
+    temp = (n * k) / div
+    pk = 0
+    for i, row in enumerate(table):
+        if temp <= row.fa:
+            Fi = 0
+            if (i - 1) > 0:
+                Fi =  table[i-1].fa
+            pk = row.li + (((temp - Fi) / row.fi) * a)
+            break
+    return pk
+
+def interquartileRange(n, a):
+    return percentil(n, a, 3, 4) - percentil(n, a, 1, 4)
+
+#def variance():
+
 
 
 def fillTable(data):
     n = len(data)
     xMax = max(data)
     xMin = min(data)
-    r = xMax - xMin + 1
+    #r = xMax - xMin + 1
+    r = xMax - xMin
     k = round(1 + 3.3*math.log10(n))
     a = round(r / k)
     tableClasses(xMin, k, a)
@@ -158,12 +176,28 @@ def fillTable(data):
     x = arithAverage(n)
     me = median(n, a)
     mo = modas(n, a)
-    
+    cola = []
+    # for moda in mo: cola.append(simetria()) 
+
     for row in table:
         print(str(row.li) + "-" + str(row.ls) + "  " + str(row.fi) + "  " + str(row.fa) + " " + str(row.xi), str(row.fixi))
     print(" media aritmetica: " +  str(x))
     print(" mediana: " +  str(me))
     print(" Moda: " + str(mo[0]))
+    
+    pk = int(input("Percentil a Calcular: "))
+    print("Percentil " + str(pk) + ": " + str(percentil(n, a, pk, 100)))
+
+    q = int(input("Quartil a Calcular: "))
+    print("Quartil " + str(q) + ": " + str(percentil(n, a, q, 4)))
+
+    dk = int(input("Decil a Calcular: "))
+    print("Decil " + str(dk) + ": " + str(percentil(n, a, dk, 10)))
+
+    print("Rango Intercuartil: " + str(interquartileRange(n, a)))
+
+
+
 
 
 
