@@ -39,7 +39,8 @@ testData =  [
                 68,	42,	48,	62,	40,	56,	94,	66,	39,	45,	33,	59,	78,	64,	50,	35,	45,	56,	69,	80,
                 69,	39,	78,	65,	42,	55,	95,	78,	45,	56,	36,	58,	80,	68, 56,	36,	54,	65,	96,	76,
                 74,	67,	93,	66,	44,	55,	82,	72,	54,	80,	94,	48,	34,	73,	61,	46,	76,	82,	64,	64,
-                89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	78,	86,	83,	76,	68
+                89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	78,	86,	83,	76,	68,
+                78, 78, 78, 78, 78, 30, 30, 30, 30, 30, 30
             ]
 
 
@@ -67,7 +68,7 @@ def absoluteFrequency(data):
 
 def acumulatedFrequency(k):
     for i in range(k):
-        fa = 0
+        fa = 0 if (i-1 < 0 or i-1 > k) else table[i-1].fa
         if i-1 < 0 or i-1 > k:
             fa = 0 
         else: 
@@ -118,7 +119,7 @@ def median(n, a):
             break
     li = table[index].li
     fi = table[index].fi
-    Fi = (index < 0) if 0 else table[index-1].fa
+    Fi = 0 if(index < 0) else table[index-1].fa
     return li + (((temp - Fi) / fi) * a)
 
 def modas(n, a):
@@ -131,8 +132,8 @@ def modas(n, a):
 
     for i, row in enumerate(table):
         if row.fi == moda:
-            d1 = row.fi - ((i < 0) if 0 else table[i-1].fi)
-            d2 = row.fi - ((i > len(table)) if 0 else table[i+1].fi)
+            d1 = row.fi - (0 if (i <= 0) else table[i-1].fi)
+            d2 = row.fi - (0 if (i > len(table)) else table[i+1].fi)
             result.append(row.li + ((d1 / (d1 + d2)) * a))
     return result
     
@@ -151,9 +152,14 @@ def percentil(n, a, k, div):
 def interquartileRange(n, a):
     return percentil(n, a, 3, 4) - percentil(n, a, 1, 4)
 
-#def variance():
+def variance(n, x):
+    acum = 0
+    for row in table:
+        acum += row.fixi2
+    return (acum / n) - x*x
 
-
+def curtosis(n, a):
+    return ((percentil(n, a, 75, 100) - percentil(n, a, 25, 100)) / (percentil(n, a, 90, 100) - percentil(n, a, 10, 100))) * 0.5
 
 def fillTable(data):
     n = len(data)
@@ -177,13 +183,19 @@ def fillTable(data):
     me = median(n, a)
     mo = modas(n, a)
     cola = []
-    # for moda in mo: cola.append(simetria()) 
+    s2 = variance(n, x)
+    s = math.sqrt(s2)
+    cv =  s / x
+    As = (3 * (x - me)) / s
+    # for moda in mo: cola.append(simetria())
+    c = curtosis(n, a)
 
     for row in table:
         print(str(row.li) + "-" + str(row.ls) + "  " + str(row.fi) + "  " + str(row.fa) + " " + str(row.xi), str(row.fixi))
     print(" media aritmetica: " +  str(x))
     print(" mediana: " +  str(me))
-    print(" Moda: " + str(mo[0]))
+    for moda in mo:
+        print(" Moda: " + str(moda))
     
     pk = int(input("Percentil a Calcular: "))
     print("Percentil " + str(pk) + ": " + str(percentil(n, a, pk, 100)))
@@ -196,11 +208,15 @@ def fillTable(data):
 
     print("Rango Intercuartil: " + str(interquartileRange(n, a)))
 
+    print("Varianza: " + str(s2))
 
+    print("Desviacion estandar: " +  str(s))
 
+    print("Coeficiente de Variazion: " +  str(cv * 100))
 
+    print("Indicie de Asimetria: " + str(As))
 
-
+    print("Curtosis: " + str(c))   
 
 
 
