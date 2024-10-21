@@ -1,4 +1,5 @@
 import math
+ans = True
 
 class tableRow():
     def __init__(self):
@@ -30,17 +31,16 @@ class tableRow():
 # }
 
 testData =  [
-                30,	46,	71,	66,	34,	95,	50,	69,	31,	55,	42,	65,	75,	77,	32,	87,	75,	89,	31,	54,
-                63,	95,	35,	86,	80,	47,	90,	82,	53,	58,	48,	66,	78,	78, 38,	82,	75,	31,	80,	79,
-                48,	94,	77,	64,	38,	95,	46,	70,	30,	60,	50,	68,	34,	73,	98,	98,	33,	84,	98,	92,
-                65,	44,	76,	96,	97,	37,	81,	85,	48,	61,	52, 47,	77,	50,	50,	49,	96,	97,	82,	49,
-                33,	78,	70,	48,	96,	82,	40,	68,	34,	62,	54,	58,	54,	70,	35,	69,	98,	30,	88,	94,
-                35,	51,	46,	92,	37,	38,	80,	54,	40,	39,	38,	54,	77,	62,	90,	39,	55,	50,	67,	31,
-                68,	42,	48,	62,	40,	56,	94,	66,	39,	45,	33,	59,	78,	64,	50,	35,	45,	56,	69,	80,
-                69,	39,	78,	65,	42,	55,	95,	78,	45,	56,	36,	58,	80,	68, 56,	36,	54,	65,	96,	76,
-                74,	67,	93,	66,	44,	55,	82,	72,	54,	80,	94,	48,	34,	73,	61,	46,	76,	82,	64,	64,
-                89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	78,	86,	83,	76,	68,
-                78, 78, 78, 78, 78, 30, 30, 30, 30, 30, 30
+    30,	46,	71,	66,	34,	95,	50,	69,	31,	55,	42,	65,	75,	77,	32,	87,	75,	89,	31,	54,
+    63,	95,	35,	86,	80,	47,	90,	82,	53,	58,	48,	66,	78,	78, 38,	82,	75,	31,	80,	79,
+    48,	94,	77,	64,	38,	95,	46,	70,	30,	60,	50,	68,	34,	73,	98,	98,	33,	84,	98,	92,
+    65,	44,	76,	96,	97,	37,	81,	85,	48,	61,	52, 47,	77,	50,	50,	49,	96,	97,	82,	49,
+    33,	78,	70,	48,	96,	82,	40,	68,	34,	62,	54,	58,	54,	70,	35,	69,	98,	30,	88,	94,
+    35,	51,	46,	92,	37,	38,	80,	54,	40,	39,	38,	54,	77,	62,	90,	39,	55,	50,	67,	31,
+    68,	42,	48,	62,	40,	56,	94,	66,	39,	45,	33,	59,	78,	64,	50,	35,	45,	56,	69,	80,
+    69,	39,	78,	65,	42,	55,	95,	78,	45,	56,	36,	58,	80,	68, 56,	36,	54,	65,	96,	76,
+    74,	67,	93,	66,	44,	55,	82,	72,	54,	80,	94,	48,	34,	73,	61,	46,	76,	82,	64,	64,
+    89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	71,	81,	81,	71,	61
             ]
 
 
@@ -104,10 +104,8 @@ def calcFiXi2():
         row.fixi2 = row.fixi * row.xi
 
 def arithAverage(n):
-    acum = 0
-    for row in table:
-        acum += row.fixi
-    x = acum / n
+    sumFixi = sum(row.fixi for row in table)
+    x = sumFixi / n
     return x
 
 def median(n, a):
@@ -124,7 +122,6 @@ def median(n, a):
 
 def modas(n, a):
     moda = 0
-    # index = []
     result = []
     for row in table:
         if row.fi > moda:
@@ -153,10 +150,8 @@ def interquartileRange(n, a):
     return percentil(n, a, 3, 4) - percentil(n, a, 1, 4)
 
 def variance(n, x):
-    acum = 0
-    for row in table:
-        acum += row.fixi2
-    return (acum / n) - x*x
+    sumFiXi2 = sum(row.fixi2 for row in table)
+    return (sumFiXi2 / n) - math.pow(x, 2)
 
 def curtosis(n, a):
     return ((percentil(n, a, 75, 100) - percentil(n, a, 25, 100)) / (percentil(n, a, 90, 100) - percentil(n, a, 10, 100))) * 0.5
@@ -165,7 +160,6 @@ def fillTable(data):
     n = len(data)
     xMax = max(data)
     xMin = min(data)
-    #r = xMax - xMin + 1
     r = xMax - xMin
     k = round(1 + 3.3*math.log10(n))
     a = round(r / k)
@@ -187,7 +181,6 @@ def fillTable(data):
     s = math.sqrt(s2)
     cv =  s / x
     As = (3 * (x - me)) / s
-    # for moda in mo: cola.append(simetria())
     c = curtosis(n, a)
 
     for row in table:
@@ -218,15 +211,12 @@ def fillTable(data):
 
     print("Curtosis: " + str(c))   
 
-
-
-a = True
-while(a):
+while(ans != 5):
     print(" ")
     print("=============Menu=============")
     print("Options")
     print("(1) Normal Pending")
-    print("(2) ")
+    print("(2) Percentil")
     print("(3) ")
     print("(4) ")
     print("(5) Exit")
