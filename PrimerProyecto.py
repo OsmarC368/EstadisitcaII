@@ -40,8 +40,8 @@ testData =  [
     68,	42,	48,	62,	40,	56,	94,	66,	39,	45,	33,	59,	78,	64,	50,	35,	45,	56,	69,	80,
     69,	39,	78,	65,	42,	55,	95,	78,	45,	56,	36,	58,	80,	68, 56,	36,	54,	65,	96,	76,
     74,	67,	93,	66,	44,	55,	82,	72,	54,	80,	94,	48,	34,	73,	61,	46,	76,	82,	64,	64,
-    89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	71,	81,	81,	71,	61
-            ]
+    89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	71,	81,	81,	71,	61,
+    54, 54, 54, 70, 70, 70, 70]
 
 
 
@@ -131,7 +131,11 @@ def modas(n, a):
         if row.fi == moda:
             d1 = row.fi - (0 if (i <= 0) else table[i-1].fi)
             d2 = row.fi - (0 if (i > len(table)) else table[i+1].fi)
-            result.append(row.li + ((d1 / (d1 + d2)) * a))
+            if d1 == 0 and d2 == 0:
+                print("Moda #" + str(len(result) + 2) + ": Error Division por 0 por lo que se usara 1 en d1/(d1+d2)")
+                result.append(row.li + a)
+            else:
+                result.append(row.li + ((d1 / (d1 + d2)) * a))
     return result
     
 def percentil(n, a, k, div):
