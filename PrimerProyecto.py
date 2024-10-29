@@ -1,5 +1,4 @@
 import math
-ans = True
 
 class tableRow():
     def __init__(self):
@@ -30,18 +29,19 @@ class tableRow():
 
 # }
 
-testData =  [
-    30,	46,	71,	66,	34,	95,	50,	69,	31,	55,	42,	65,	75,	77,	32,	87,	75,	89,	31,	54,
-    63,	95,	35,	86,	80,	47,	90,	82,	53,	58,	48,	66,	78,	78, 38,	82,	75,	31,	80,	79,
-    48,	94,	77,	64,	38,	95,	46,	70,	30,	60,	50,	68,	34,	73,	98,	98,	33,	84,	98,	92,
-    65,	44,	76,	96,	97,	37,	81,	85,	48,	61,	52, 47,	77,	50,	50,	49,	96,	97,	82,	49,
-    33,	78,	70,	48,	96,	82,	40,	68,	34,	62,	54,	58,	54,	70,	35,	69,	98,	30,	88,	94,
-    35,	51,	46,	92,	37,	38,	80,	54,	40,	39,	38,	54,	77,	62,	90,	39,	55,	50,	67,	31,
-    68,	42,	48,	62,	40,	56,	94,	66,	39,	45,	33,	59,	78,	64,	50,	35,	45,	56,	69,	80,
-    69,	39,	78,	65,	42,	55,	95,	78,	45,	56,	36,	58,	80,	68, 56,	36,	54,	65,	96,	76,
-    74,	67,	93,	66,	44,	55,	82,	72,	54,	80,	94,	48,	34,	73,	61,	46,	76,	82,	64,	64,
-    89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	71,	81,	81,	71,	61,
-    54, 54, 54, 70, 70, 70, 70]
+testData = [
+                30,	46,	71,	66,	34,	95,	50,	69,	31,	55,	42,	65,	75,	77,	32,	87,	75,	89,	31,	54,
+                63,	95,	35,	86,	80,	47,	90,	82,	53,	58,	48,	66,	78,	78, 38,	82,	75,	31,	80,	79,
+                48,	94,	77,	64,	38,	95,	46,	70,	30,	60,	50,	68,	34,	73,	98,	98,	33,	84,	98,	92,
+                65,	44,	76,	96,	97,	37,	81,	85,	48,	61,	52, 47,	77,	50,	50,	49,	96,	97,	82,	49,
+                33,	78,	70,	48,	96,	82,	40,	68,	34,	62,	54,	58,	54,	70,	35,	69,	98,	30,	88,	94,
+                35,	51,	46,	92,	37,	38,	80,	54,	40,	39,	38,	54,	77,	62,	90,	39,	55,	50,	67,	31,
+                68,	42,	48,	62,	40,	56,	94,	66,	39,	45,	33,	59,	78,	64,	50,	35,	45,	56,	69,	80,
+                69,	39,	78,	65,	42,	55,	95,	78,	45,	56,	36,	58,	80,	68, 56,	36,	54,	65,	96,	76,
+                74,	67,	93,	66,	44,	55,	82,	72,	54,	80,	94,	48,	34,	73,	61,	46,	76,	82,	64,	64,
+                89,	89,	75,	66,	45,	59,	71,	89,	76,	74,	86,	56,	44,	91,	62,	79, 89, 87, 79, 69,
+                35, 35, 35, 35, 35
+            ]
 
 
 
@@ -121,18 +121,19 @@ def median(n, a):
     return li + (((temp - Fi) / fi) * a)
 
 def modas(n, a):
-    moda = 0
+    #moda = 0
+    moda = max(row.fi for row in table)
     result = []
-    for row in table:
-        if row.fi > moda:
-            moda = row.fi
+    # for row in table:
+    #     if row.fi > moda:
+    #         moda = row.fi
 
     for i, row in enumerate(table):
         if row.fi == moda:
             d1 = row.fi - (0 if (i <= 0) else table[i-1].fi)
-            d2 = row.fi - (0 if (i > len(table)) else table[i+1].fi)
+            d2 = row.fi - (0 if (i >= (len(table) - 1)) else table[i+1].fi)
             if d1 == 0 and d2 == 0:
-                print("Moda #" + str(len(result) + 2) + ": Error Division por 0 por lo que se usara 1 en d1/(d1+d2)")
+                print("Moda #" + str(len(result) + 1) + ": Error Division por 0 por lo que se usara 1 en d1/(d1+d2)")
                 result.append(row.li + a)
             else:
                 result.append(row.li + ((d1 / (d1 + d2)) * a))
@@ -161,6 +162,7 @@ def curtosis(n, a):
     return ((percentil(n, a, 75, 100) - percentil(n, a, 25, 100)) / (percentil(n, a, 90, 100) - percentil(n, a, 10, 100))) * 0.5
 
 def fillTable(data):
+    ans = "0"
     n = len(data)
     xMax = max(data)
     xMin = min(data)
@@ -187,46 +189,127 @@ def fillTable(data):
     As = (3 * (x - me)) / s
     c = curtosis(n, a)
 
-    for row in table:
-        print(str(row.li) + "-" + str(row.ls) + "  " + str(row.fi) + "  " + str(row.fa) + " " + str(row.xi), str(row.fixi))
-    print(" media aritmetica: " +  str(x))
-    print(" mediana: " +  str(me))
-    for moda in mo:
-        print(" Moda: " + str(moda))
-    
-    pk = int(input("Percentil a Calcular: "))
-    print("Percentil " + str(pk) + ": " + str(percentil(n, a, pk, 100)))
+    while(ans != "15"):
+        print(" ")
+        print("=============Menu=============")
+        print("Options")
+        print("(1) Frequency table")
+        print("(2) Table Metrics")
+        print("(3) Arithm Mean")
+        print("(4) Median")
+        print("(5) Mode")
+        print("(6) Calculate Percentile")
+        print("(7) Calculate Decile")
+        print("(8) Calculate Quantile")
+        print("(9) Interquartile Range")
+        print("(10) Variance")
+        print("(11) Standard Deviation")
+        print("(12) Coefficient of Variation")
+        print("(13) Asymmetry Index")
+        print("(14) Kurtosis")
+        print("(15) Exit")
+        ans = input()
+        if ans == "1":
+            print("\n/--------------------------------------------------------------------------------/")
+            print("‖Clases‖ ‖ fi ‖ ‖ fa ‖ ‖ fir ‖ ‖ fir% ‖ ‖ far ‖ ‖ far% ‖ ‖ xi ‖ ‖ fixi ‖ ‖ fixi2 ‖")
+            for row in table:
+                print(f"‖{row.li} - {row.ls}‖ ‖{row.fi}‖ ‖{row.fa}‖ ‖{row.fir}‖ ‖{row.firP}‖ ‖{row.far}‖ ‖{row.farP}‖ ‖{row.xi}‖ ‖{row.fixi}‖ ‖{row.fixi2}‖")
+            print("/--------------------------------------------------------------------------------/")
+                            
+        elif ans == "2":
+            print("\n/---------------------------------/")
+            print(f"Amount of Data: {n}")
+            print(f"Number of Classes: {k}")
+            print(f"Amplitude: {a}")
+            print(f"X Min: {xMin}")
+            print(f"X Max: {xMax}")
+            print(f"Range: {r}")
+            print("/---------------------------------/")
 
-    q = int(input("Quartil a Calcular: "))
-    print("Quartil " + str(q) + ": " + str(percentil(n, a, q, 4)))
+        elif ans == "3":
+            print("\n/---------------------------------/")
+            print(f"Arithm Mean: {x}")
+            print("/---------------------------------/")
 
-    dk = int(input("Decil a Calcular: "))
-    print("Decil " + str(dk) + ": " + str(percentil(n, a, dk, 10)))
+        elif ans == "4":
+            print("\n/---------------------------------/")
+            print(f"Median: {format(me, '.2f')}")
+            print("/---------------------------------/")
 
-    print("Rango Intercuartil: " + str(interquartileRange(n, a)))
+        elif ans == "5":
+            print("\n/---------------------------------/")
+            for i, mode in enumerate(mo):
+                print(f"Mode #{i+1}: {format(mode, '.2f')}")
+            print("/---------------------------------/")
 
-    print("Varianza: " + str(s2))
+        elif ans == "6":
+            print("\n/---------------------------------/")
+            try: pk = int(input("Percentile to Calculate: "))
+            except: 
+                print("Error: Not a Integer Value") 
+                break
+            if 0 < pk <= 100:
+                print(f"Percentil {pk}: {str(format(percentil(n, a, pk, 100), '.2f'))}")
+            else:
+                print("Error: Out of Range")
+            print("/---------------------------------/")
+            
 
-    print("Desviacion estandar: " +  str(s))
+        elif ans == "7":
+            print("\n/---------------------------------/")
+            try: dk = int(input("Decile to Calculate: "))
+            except: 
+                print("Error: Not a Integer Value") 
+                break
+            if 0 < dk <= 10:
+                print(f"Decile {dk}: {percentil(n, a, dk, 10)}")
+            else:
+                print("Error: Out of Range")
+            print("/---------------------------------/")
 
-    print("Coeficiente de Variazion: " +  str(cv * 100))
+        elif ans == "8":
+            print("\n/---------------------------------/")
+            try: qk = int(input("Quartile to Calculate: "))
+            except: 
+                print("Error: Not a Integer Value") 
+                break
+            if 0 < qk < 4:
+                print(f"Quartile {qk}: {percentil(n, a, qk, 4)}")
+            else:
+                print("Error: Out of Range")
+            print("/---------------------------------/")
 
-    print("Indicie de Asimetria: " + str(As))
+        elif ans == "9":
+            print("\n/---------------------------------/")
+            print(f"Interquartile Range: {interquartileRange(n, a)}")
+            print("/---------------------------------/")
 
-    print("Curtosis: " + str(c))   
+        elif ans == "10":
+            print("\n/---------------------------------/")
+            print(f"Variance: {s2}")
+            print("/---------------------------------/")
 
-while(ans != 5):
-    print(" ")
-    print("=============Menu=============")
-    print("Options")
-    print("(1) Normal Pending")
-    print("(2) Percentil")
-    print("(3) ")
-    print("(4) ")
-    print("(5) Exit")
-    ans = input()
-    if int(ans) == 5:
-        print("GoodBy-e")
-        a = False
-    else:
-        fillTable(testData)
+        elif ans == "11":
+            print("\n/---------------------------------/")
+            print(f"Standard Deviation: {s}")
+            print("/---------------------------------/")
+
+        elif ans == "12":
+            print("\n/---------------------------------/")
+            print(f"Coefficient of Variation: {cv * 100}")
+            print("/---------------------------------/")
+
+        elif ans == "13":
+            print("\n/---------------------------------/")
+            print(F"Asymmetry Index: {As}")
+            print("/---------------------------------/")
+
+        elif ans == "14":
+            print("\n/---------------------------------/")
+            print(f"Kurtosis: {c}")   
+            print("/---------------------------------/")
+
+        elif ans == "15":
+            print("Go0dbyE HUmAn $%&/%##")
+
+fillTable(testData)
