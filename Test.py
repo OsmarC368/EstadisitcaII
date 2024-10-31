@@ -1,6 +1,7 @@
 import csv
 import matplotlib.pyplot as plt
 
+
 values = []
 
 with open("Datosproyecto2024.csv", newline="") as dataBase:

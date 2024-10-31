@@ -1,4 +1,9 @@
 import math
+import csv
+import matplotlib
+from tabulate import tabulate
+import cutie
+
 
 class tableRow():
     def __init__(self):
@@ -45,10 +50,7 @@ testData = [
 
 
 
-table = []
-
-
-def tableClasses(xMin, k, a):
+def tableClasses(table, xMin, k, a):
      
     for i in range (k):
         table.append(tableRow())
@@ -60,13 +62,13 @@ def tableClasses(xMin, k, a):
         row.ls = row.li + a
         liCount += 1
 
-def absoluteFrequency(data):
+def absoluteFrequency(table, data):
     for row in table:
         for value in data:
             if row.li <= value < row.ls:
                 row.fi += 1
 
-def acumulatedFrequency(k):
+def acumulatedFrequency(table, k):
     for i in range(k):
         fa = 0 if (i-1 < 0 or i-1 > k) else table[i-1].fa
         if i-1 < 0 or i-1 > k:
@@ -75,40 +77,40 @@ def acumulatedFrequency(k):
             fa = table[i-1].fa
         table[i].fa = fa + table[i].fi
 
-def absFreRelative(n):
+def absFreRelative(table, n):
     for row in table:
         row.fir = row.fi / n
 
-def absFreRelPercentage():
+def absFreRelPercentage(table):
     for row in table:
         row.firP = row.fir * 100
 
-def acumFreRelative(n):
+def acumFreRelative(table, n):
     for row in table:
         row.far = row.fa / n
 
-def acumFreRelPercentage():
+def acumFreRelPercentage(table):
     for row in table:
         row.farP = row.far * 100
 
-def calcMiddlePoints():
+def calcMiddlePoints(table):
     for row in table:
         row.xi = (row.li + row.ls) / 2
 
-def calcFiXi():
+def calcFiXi(table):
     for row in table:
         row.fixi = row.fi * row.xi
 
-def calcFiXi2():
+def calcFiXi2(table):
     for row in table:
         row.fixi2 = row.fixi * row.xi
 
-def arithAverage(n):
+def arithAverage(table, n):
     sumFixi = sum(row.fixi for row in table)
     x = sumFixi / n
     return x
 
-def median(n, a):
+def median(table, n, a):
     temp = n/2
     index = 0
     for i, row in enumerate(table):
@@ -120,13 +122,10 @@ def median(n, a):
     Fi = 0 if(index < 0) else table[index-1].fa
     return li + (((temp - Fi) / fi) * a)
 
-def modas(n, a):
-    #moda = 0
+def modas(table, a):
+
     moda = max(row.fi for row in table)
     result = []
-    # for row in table:
-    #     if row.fi > moda:
-    #         moda = row.fi
 
     for i, row in enumerate(table):
         if row.fi == moda:
@@ -139,7 +138,7 @@ def modas(n, a):
                 result.append(row.li + ((d1 / (d1 + d2)) * a))
     return result
     
-def percentil(n, a, k, div):
+def percentil(table, n, a, k, div):
     temp = (n * k) / div
     pk = 0
     for i, row in enumerate(table):
@@ -151,17 +150,18 @@ def percentil(n, a, k, div):
             break
     return pk
 
-def interquartileRange(n, a):
-    return percentil(n, a, 3, 4) - percentil(n, a, 1, 4)
+def interquartileRange(table, n, a):
+    return percentil(table, n, a, 3, 4) - percentil(table, n, a, 1, 4)
 
-def variance(n, x):
+def variance(table, n, x):
     sumFiXi2 = sum(row.fixi2 for row in table)
     return (sumFiXi2 / n) - math.pow(x, 2)
 
-def curtosis(n, a):
-    return ((percentil(n, a, 75, 100) - percentil(n, a, 25, 100)) / (percentil(n, a, 90, 100) - percentil(n, a, 10, 100))) * 0.5
+def curtosis(table, n, a):
+    return ((percentil(table, n, a, 75, 100) - percentil(table, n, a, 25, 100)) / (percentil(table, n, a, 90, 100) - percentil(table, n, a, 10, 100))) * 0.5
 
-def fillTable(data):
+def fillTable(data, title):
+    table = []
     ans = "0"
     n = len(data)
     xMax = max(data)
@@ -169,52 +169,72 @@ def fillTable(data):
     r = xMax - xMin
     k = round(1 + 3.3*math.log10(n))
     a = round(r / k)
-    tableClasses(xMin, k, a)
-    absoluteFrequency(data)
-    acumulatedFrequency(k)
-    absFreRelative(n)
-    absFreRelPercentage()
-    acumFreRelative(n)
-    acumFreRelPercentage()
-    calcMiddlePoints()
-    calcFiXi()
-    calcFiXi2()
-    x = arithAverage(n)
-    me = median(n, a)
-    mo = modas(n, a)
-    cola = []
-    s2 = variance(n, x)
+    tableClasses(table, xMin, k, a)
+    absoluteFrequency(table, data)
+    acumulatedFrequency(table, k)
+    absFreRelative(table, n)
+    absFreRelPercentage(table)
+    acumFreRelative(table, n)
+    acumFreRelPercentage(table)
+    calcMiddlePoints(table)
+    calcFiXi(table)
+    calcFiXi2(table)
+    x = arithAverage(table, n)
+    me = median(table, n, a)
+    mo = modas(table, a)
+    s2 = variance(table, n, x)
     s = math.sqrt(s2)
     cv =  s / x
     As = (3 * (x - me)) / s
-    c = curtosis(n, a)
-
+    c = curtosis(table, n, a)
+    options = [
+                '- Frequency table', '- Table Metrics', '- Arithm Mean', '- Median', '- mode', '- Calcualte Percentile',
+                '- Calculate Decile', '- Calculate Quantile', '- Interquartile Range', '- Variance', '- Standard Deviation',
+                '- Coefficient of Variation', '- Asymmetry Index', '- Kurtosis', '<- Back'
+            ]
     while(ans != "15"):
         print(" ")
-        print("=============Menu=============")
-        print("Options")
-        print("(1) Frequency table")
-        print("(2) Table Metrics")
-        print("(3) Arithm Mean")
-        print("(4) Median")
-        print("(5) Mode")
-        print("(6) Calculate Percentile")
-        print("(7) Calculate Decile")
-        print("(8) Calculate Quantile")
-        print("(9) Interquartile Range")
-        print("(10) Variance")
-        print("(11) Standard Deviation")
-        print("(12) Coefficient of Variation")
-        print("(13) Asymmetry Index")
-        print("(14) Kurtosis")
-        print("(15) Exit")
-        ans = input()
+        print(f"============= {title} FREQUENCY TABLE MENU =============")
+        print("/----------Options----------/")
+        # print("(1) Frequency table")
+        # print("(2) Table Metrics")
+        # print("(3) Arithm Mean")
+        # print("(4) Median")
+        # print("(5) Mode")
+        # print("(6) Calculate Percentile")
+        # print("(7) Calculate Decile")
+        # print("(8) Calculate Quantile")
+        # print("(9) Interquartile Range")
+        # print("(10) Variance")
+        # print("(11) Standard Deviation")
+        # print("(12) Coefficient of Variation")
+        # print("(13) Asymmetry Index")
+        # print("(14) Kurtosis")
+        # print("(15) <- Back")
+        optionIndex = cutie.select(options)
+        ans = str(optionIndex + 1)
         if ans == "1":
-            print("\n/--------------------------------------------------------------------------------/")
-            print("‖Clases‖ ‖ fi ‖ ‖ fa ‖ ‖ fir ‖ ‖ fir% ‖ ‖ far ‖ ‖ far% ‖ ‖ xi ‖ ‖ fixi ‖ ‖ fixi2 ‖")
+            data = []
+            print("\n/-------------------------------------------------------------------------------------/")
+            # print("‖Clases‖ ‖ fi ‖ ‖ fa ‖ ‖ fir ‖ ‖ fir% ‖ ‖ far ‖ ‖ far% ‖ ‖ xi ‖ ‖ fixi ‖ ‖ fixi2 ‖")
+            # for row in table:
+            #     print(f"‖{(row.li)} - {row.ls}‖ ‖{row.fi}‖ ‖{row.fa}‖ ‖{format(row.fir, '.2f')}‖ ‖{format(row.firP, '.2f')}‖ ‖{format(row.far, '.2f')}‖ ‖{format(row.farP, '.2f')}‖ ‖{format(row.xi, '.2f')}‖ ‖{format(row.fixi, '.2f')}‖ ‖{format(row.fixi2, '.2f')}‖")
             for row in table:
-                print(f"‖{row.li} - {row.ls}‖ ‖{row.fi}‖ ‖{row.fa}‖ ‖{row.fir}‖ ‖{row.firP}‖ ‖{row.far}‖ ‖{row.farP}‖ ‖{row.xi}‖ ‖{row.fixi}‖ ‖{row.fixi2}‖")
-            print("/--------------------------------------------------------------------------------/")
+                rowData = []
+                rowData.append(f'{row.li} - {row.ls}')
+                rowData.append(row.fi)
+                rowData.append(row.fa)
+                rowData.append(format(row.fir, '.2f'))
+                rowData.append(format(row.firP, '.2f'))
+                rowData.append(format(row.far, '.2f'))
+                rowData.append(format(row.farP, '.2f'))
+                rowData.append(format(row.xi, '.2f'))
+                rowData.append(format(row.fixi, '.2f'))
+                rowData.append(format(row.fixi2, '.2f'))
+                data.append(rowData)
+            # print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='fancy_grid'))
+            print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='github'))
+            print("/-------------------------------------------------------------------------------------/")
                             
         elif ans == "2":
             print("\n/---------------------------------/")
@@ -228,7 +248,7 @@ def fillTable(data):
 
         elif ans == "3":
             print("\n/---------------------------------/")
-            print(f"Arithm Mean: {x}")
+            print(f"Arithm Mean: {format(x, '.2f')}")
             print("/---------------------------------/")
 
         elif ans == "4":
@@ -249,7 +269,7 @@ def fillTable(data):
                 print("Error: Not a Integer Value") 
                 break
             if 0 < pk <= 100:
-                print(f"Percentil {pk}: {str(format(percentil(n, a, pk, 100), '.2f'))}")
+                print(f"Percentil {pk}: {str(format(percentil(table, n, a, pk, 100), '.2f'))}")
             else:
                 print("Error: Out of Range")
             print("/---------------------------------/")
@@ -262,7 +282,7 @@ def fillTable(data):
                 print("Error: Not a Integer Value") 
                 break
             if 0 < dk <= 10:
-                print(f"Decile {dk}: {percentil(n, a, dk, 10)}")
+                print(f"Decile {dk}: {format(percentil(table, n, a, dk, 10), '.2f')}")
             else:
                 print("Error: Out of Range")
             print("/---------------------------------/")
@@ -274,42 +294,105 @@ def fillTable(data):
                 print("Error: Not a Integer Value") 
                 break
             if 0 < qk < 4:
-                print(f"Quartile {qk}: {percentil(n, a, qk, 4)}")
+                print(f"Quartile {qk}: {format(percentil(table, n, a, qk, 4), '.2f')}")
             else:
                 print("Error: Out of Range")
             print("/---------------------------------/")
 
         elif ans == "9":
             print("\n/---------------------------------/")
-            print(f"Interquartile Range: {interquartileRange(n, a)}")
+            print(f"Interquartile Range: {format(interquartileRange(table, n, a), '.2f')}")
             print("/---------------------------------/")
 
         elif ans == "10":
             print("\n/---------------------------------/")
-            print(f"Variance: {s2}")
+            print(f"Variance: {format(s2, '.2f')}")
             print("/---------------------------------/")
 
         elif ans == "11":
             print("\n/---------------------------------/")
-            print(f"Standard Deviation: {s}")
+            print(f"Standard Deviation: {format(s, '.2f')}")
             print("/---------------------------------/")
 
         elif ans == "12":
             print("\n/---------------------------------/")
-            print(f"Coefficient of Variation: {cv * 100}")
+            print(f"Coefficient of Variation: {format((cv * 100), '.2f')}")
             print("/---------------------------------/")
 
         elif ans == "13":
             print("\n/---------------------------------/")
-            print(F"Asymmetry Index: {As}")
+            print(F"Asymmetry Index: {format(As, '.4f')}")
             print("/---------------------------------/")
 
         elif ans == "14":
             print("\n/---------------------------------/")
-            print(f"Kurtosis: {c}")   
+            print(f"Kurtosis: {format(c, '.4f')}")   
             print("/---------------------------------/")
 
         elif ans == "15":
+            mainMenu()
+
+
+def mainMenu(sex, age, married, income, hoursWK, race, healthInsurance, language):
+    
+    ans = 0
+    options = [
+        '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- Health Insurance', '- languaje', '- Classic Data', '- Exit'
+
+    ]
+    while(ans < 10):
+        print("\n================================================================")
+        print("========================== MAIN MENU ===========================")
+        print("================================================================")
+        optChoice = cutie.select(options)
+        ans = optChoice + 1
+        
+        if ans == 1:
+            print("Work in Progress")
+        elif ans == 2:
+            fillTable(age, "AGE")
+        elif ans == 3:
+            print("Work in Progress")
+        elif ans == 4:
+            fillTable(income, "INCOME")
+        elif ans == 5:
+            fillTable(hoursWK, "HOURS WORKING")
+        elif ans == 6:
+            print("Work in Progress")
+        elif ans == 7:
+            print("Work in Progress")
+        elif ans == 8:
+            print("Work in Progress")
+        elif ans == 9:
+            fillTable(testData, "OLD DATA")
+        elif ans == 10:
             print("Go0dbyE HUmAn $%&/%##")
 
-fillTable(testData)
+
+
+
+if __name__ == "__main__":
+    sex = []
+    age = []
+    married = []
+    income = []
+    hoursWK = []
+    race = []
+    healthInsurance = []
+    language = []
+    with open("Datosproyecto2024.csv", newline="") as dataBase:
+        spamreader = csv.reader(dataBase, delimiter=" ", quotechar=" ")
+        i = 0
+        for row in spamreader:
+            if i > 0:
+                data = row[0].split(",")
+                sex.append(int(data[0]))
+                age.append(int(data[1]))
+                married.append(int(data[2]))
+                income.append(float(data[3]))
+                hoursWK.append(float(data[4]))
+                race.append(data[5])
+                healthInsurance.append(float(data[6]))
+                language.append(int(data[7]))
+            i = 1
+    mainMenu(sex, age, married, income, hoursWK, race, healthInsurance, language)
