@@ -196,45 +196,27 @@ def fillTable(data, title):
         print(" ")
         print(f"============= {title} FREQUENCY TABLE MENU =============")
         print("/----------Options----------/")
-        # print("(1) Frequency table")
-        # print("(2) Table Metrics")
-        # print("(3) Arithm Mean")
-        # print("(4) Median")
-        # print("(5) Mode")
-        # print("(6) Calculate Percentile")
-        # print("(7) Calculate Decile")
-        # print("(8) Calculate Quantile")
-        # print("(9) Interquartile Range")
-        # print("(10) Variance")
-        # print("(11) Standard Deviation")
-        # print("(12) Coefficient of Variation")
-        # print("(13) Asymmetry Index")
-        # print("(14) Kurtosis")
-        # print("(15) <- Back")
         optionIndex = cutie.select(options)
         ans = str(optionIndex + 1)
         if ans == "1":
             data = []
-            print("\n/-------------------------------------------------------------------------------------/")
-            # print("‖Clases‖ ‖ fi ‖ ‖ fa ‖ ‖ fir ‖ ‖ fir% ‖ ‖ far ‖ ‖ far% ‖ ‖ xi ‖ ‖ fixi ‖ ‖ fixi2 ‖")
-            # for row in table:
-            #     print(f"‖{(row.li)} - {row.ls}‖ ‖{row.fi}‖ ‖{row.fa}‖ ‖{format(row.fir, '.2f')}‖ ‖{format(row.firP, '.2f')}‖ ‖{format(row.far, '.2f')}‖ ‖{format(row.farP, '.2f')}‖ ‖{format(row.xi, '.2f')}‖ ‖{format(row.fixi, '.2f')}‖ ‖{format(row.fixi2, '.2f')}‖")
+            print("\n/------------------------------------------------------------------------------------------/")
             for row in table:
                 rowData = []
                 rowData.append(f'{row.li} - {row.ls}')
                 rowData.append(row.fi)
                 rowData.append(row.fa)
-                rowData.append(format(row.fir, '.2f'))
+                rowData.append(format(row.fir, '.4f'))
                 rowData.append(format(row.firP, '.2f'))
-                rowData.append(format(row.far, '.2f'))
+                rowData.append(format(row.far, '.4f'))
                 rowData.append(format(row.farP, '.2f'))
                 rowData.append(format(row.xi, '.2f'))
                 rowData.append(format(row.fixi, '.2f'))
                 rowData.append(format(row.fixi2, '.2f'))
                 data.append(rowData)
-            # print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='fancy_grid'))
-            print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='github'))
-            print("/-------------------------------------------------------------------------------------/")
+            print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='fancy_grid'))
+            # print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='github'))
+            print("/------------------------------------------------------------------------------------------/")
                             
         elif ans == "2":
             print("\n/---------------------------------/")
@@ -329,15 +311,16 @@ def fillTable(data, title):
             print(f"Kurtosis: {format(c, '.4f')}")   
             print("/---------------------------------/")
 
-        elif ans == "15":
-            mainMenu()
+        # elif ans == "15":
+        #     #mainMenu()
+        #     hola = 1
 
 
-def mainMenu(sex, age, married, income, hoursWK, race, healthInsurance, language):
+def mainMenu():
     
     ans = 0
     options = [
-        '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- Health Insurance', '- languaje', '- Classic Data', '- Exit'
+        '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- usCitizen', '- Health Insurance', '- languaje', '- Classic Data', '- Exit'
 
     ]
     while(ans < 10):
@@ -364,6 +347,8 @@ def mainMenu(sex, age, married, income, hoursWK, race, healthInsurance, language
         elif ans == 8:
             print("Work in Progress")
         elif ans == 9:
+            print("Work in Progress")
+        elif ans == 10:
             fillTable(testData, "OLD DATA")
         elif ans == 10:
             print("Go0dbyE HUmAn $%&/%##")
@@ -371,15 +356,17 @@ def mainMenu(sex, age, married, income, hoursWK, race, healthInsurance, language
 
 
 
+sex = []
+age = []
+married = []
+income = []
+hoursWK = []
+race = []
+usCitizen = []
+healthInsurance = []
+language = []
+
 if __name__ == "__main__":
-    sex = []
-    age = []
-    married = []
-    income = []
-    hoursWK = []
-    race = []
-    healthInsurance = []
-    language = []
     with open("Datosproyecto2024.csv", newline="") as dataBase:
         spamreader = csv.reader(dataBase, delimiter=" ", quotechar=" ")
         i = 0
@@ -392,7 +379,8 @@ if __name__ == "__main__":
                 income.append(float(data[3]))
                 hoursWK.append(float(data[4]))
                 race.append(data[5])
-                healthInsurance.append(float(data[6]))
-                language.append(int(data[7]))
+                usCitizen.append(data[6])
+                healthInsurance.append(float(data[7]))
+                language.append(int(data[8]))
             i = 1
-    mainMenu(sex, age, married, income, hoursWK, race, healthInsurance, language)
+    mainMenu()
