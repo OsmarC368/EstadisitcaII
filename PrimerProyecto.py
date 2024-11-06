@@ -1,9 +1,9 @@
 import math
 import csv
-import matplotlib
+import matplotlib.pyplot as plt
 from tabulate import tabulate
 import cutie
-
+import numpy as np
 
 class tableRow():
     def __init__(self):
@@ -160,6 +160,12 @@ def variance(table, n, x):
 def curtosis(table, n, a):
     return ((percentil(table, n, a, 75, 100) - percentil(table, n, a, 25, 100)) / (percentil(table, n, a, 90, 100) - percentil(table, n, a, 10, 100))) * 0.5
 
+def showGraph(data, bins, title):
+    plt.hist(data, bins=bins, edgecolor='yellow', color='red')
+    plt.title(f"{title} Histogram \n", fontweight='bold')
+    plt.show()
+
+
 def fillTable(data, title):
     table = []
     ans = "0"
@@ -190,9 +196,9 @@ def fillTable(data, title):
     options = [
                 '- Frequency table', '- Table Metrics', '- Arithm Mean', '- Median', '- mode', '- Calcualte Percentile',
                 '- Calculate Decile', '- Calculate Quantile', '- Interquartile Range', '- Variance', '- Standard Deviation',
-                '- Coefficient of Variation', '- Asymmetry Index', '- Kurtosis', '<- Back'
+                '- Coefficient of Variation', '- Asymmetry Index', '- Kurtosis', '- Show Hist Graph','<- Back'
             ]
-    while(ans != "15"):
+    while(ans != "16"):
         print(" ")
         print(f"============= {title} FREQUENCY TABLE MENU =============")
         print("/----------Options----------/")
@@ -311,19 +317,46 @@ def fillTable(data, title):
             print(f"Kurtosis: {format(c, '.4f')}")   
             print("/---------------------------------/")
 
-        # elif ans == "15":
-        #     #mainMenu()
-        #     hola = 1
+        elif ans == "15":
+            bins = []
+            for row in table:
+                bins.append(row.li)
+            plt.close('all')
+            showGraph(data, bins, title)
 
+def sexGraph():
+    plt.close('all')
+    male = sex.count(0)
+    female = sex.count(1)
+    labels = ['Male','Female']
+    sexData = np.array([male, female])
+    colors = ["#52a4ec", "#ea74f3"]
+    plt.pie(sexData, labels=labels, colors=colors)
+    plt.title("Sex Pie Graphic")
+    plt.legend()
+    plt.show()
+
+def marriedGraph():
+    plt.close('all')
+    single = married.count(0)
+    marriedC = married.count(1)
+    labels = ['Single','Married']
+    sexData = np.array([single, marriedC])
+    colors = ["#52a4ec", "#ea74f3"]
+    plt.pie(sexData, labels=labels, colors=colors)
+    plt.title("Married Pie Graphic")
+    plt.legend()
+    plt.show()
 
 def mainMenu():
+    
     
     ans = 0
     options = [
         '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- usCitizen', '- Health Insurance', '- languaje', '- Classic Data', '- Exit'
 
     ]
-    while(ans < 10):
+    while(ans < 11):
         print("\n================================================================")
         print("========================== MAIN MENU ===========================")
         print("================================================================")
@@ -331,11 +364,11 @@ def mainMenu():
         ans = optChoice + 1
         
         if ans == 1:
-            print("Work in Progress")
+            sexGraph()
         elif ans == 2:
             fillTable(age, "AGE")
         elif ans == 3:
-            print("Work in Progress")
+            marriedGraph()
         elif ans == 4:
             fillTable(income, "INCOME")
         elif ans == 5:
@@ -350,7 +383,7 @@ def mainMenu():
             print("Work in Progress")
         elif ans == 10:
             fillTable(testData, "OLD DATA")
-        elif ans == 10:
+        elif ans == 11:
             print("Go0dbyE HUmAn $%&/%##")
 
 
@@ -368,20 +401,20 @@ language = []
 
 if __name__ == "__main__":
     with open("Datosproyecto2024.csv", newline="") as dataBase:
-        spamreader = csv.reader(dataBase, delimiter=" ", quotechar=" ")
+        spamreader = csv.reader(dataBase)
         i = 0
         for row in spamreader:
             if i > 0:
-                data = row[0].split(",")
-                sex.append(int(data[0]))
-                age.append(int(data[1]))
-                married.append(int(data[2]))
-                income.append(float(data[3]))
-                hoursWK.append(float(data[4]))
-                race.append(data[5])
-                usCitizen.append(data[6])
-                healthInsurance.append(float(data[7]))
-                language.append(int(data[8]))
+                # data = row[0].split(",")
+                sex.append(int(row[0]))
+                age.append(int(row[1]))
+                married.append(int(row[2]))
+                income.append(float(row[3]))
+                hoursWK.append(float(row[4]))
+                race.append(row[5])
+                usCitizen.append(int(row[6]))
+                healthInsurance.append(float(row[7]))
+                language.append(int(row[8]))
             i = 1
     mainMenu()
 
