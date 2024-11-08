@@ -143,7 +143,8 @@ def percentil(table, n, a, k, div):
     pk = 0
     for i, row in enumerate(table):
         if temp <= row.fa:
-            Fi = 0
+            # Fi = 0 if i-1 <= 0 else table[i-1]
+            Fi = 0 
             if (i - 1) > 0:
                 Fi =  table[i-1].fa
             pk = row.li + (((temp - Fi) / row.fi) * a)
@@ -174,9 +175,9 @@ def fillTable(data, title, ansS):
     xMin = min(data)
     r = (xMax - xMin) + 1
     k = round(1 + 3.3*math.log10(n))
-    a = round(r / k) + 1
+    # a = round(r / k) + 1
+    a = math.ceil(r / k)
     print(a)
-    print(k)
     tableClasses(table, xMin, k, a)
     absoluteFrequency(table, data)
     acumulatedFrequency(table, k)
@@ -441,13 +442,117 @@ def showFaseI():
     print(tabulate(hoursWKTableData, headers=['Variable: Hours WK ', ''], tablefmt='fancy_grid'))
 
 
+def raceSexTable():
+    srTableData = []
+
+    femAsian = 0
+    femBlack = 0
+    femWhite = 0
+    femOther = 0
+    femTotal = 0
+
+    maleAsian = 0
+    maleBlack = 0
+    maleWhite = 0
+    maleOther = 0
+    maleTotal = 0
+
+    for i in range(2000):
+        femAsian += 1 if sex[i] == 1 and race[i] == 'asian' else 0
+        femBlack += 1 if sex[i] == 1 and race[i] == 'black' else 0
+        femWhite += 1 if sex[i] == 1 and race[i] == 'white' else 0
+        femOther += 1 if sex[i] == 1 and race[i] == 'other' else 0
+        femTotal += 1 if sex[i] == 1 else 0
+
+        maleAsian += 1 if sex[i] == 0 and race[i] == 'asian' else 0
+        maleBlack += 1 if sex[i] == 0 and race[i] == 'black' else 0
+        maleWhite += 1 if sex[i] == 0 and race[i] == 'white' else 0
+        maleOther += 1 if sex[i] == 0 and race[i] == 'other' else 0
+        maleTotal += 1 if sex[i] == 0 else 0
+    
+    srTableData.append(['sex'])
+    srTableData.append(['F', femAsian, femBlack, femWhite, femOther, femTotal])
+    srTableData.append(['M', maleAsian, maleBlack, maleWhite, maleOther, maleTotal])
+    srTableData.append(['Total', (femAsian + maleAsian), (femBlack + maleBlack), (femWhite + maleWhite), (femOther + maleOther), (femTotal + maleTotal)])
+
+    print(tabulate(srTableData, headers=['Race', 'Asian', 'Black', 'White', 'Other', 'Total'], tablefmt='fancy_grid'))
+
+def ageHoursWKTable():
+    ahTableData = [['Age']]
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+    ahTableData.append(['', 0, 0, 0, 0])
+
+    for i in range(2000):
+        ahTableData[1][0] = '14-24'
+        ahTableData[1][1] += 1 if 14 <= age[i] <= 24 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[1][2] += 1 if 14 <= age[i] <= 24 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[1][3] += 1 if 14 <= age[i] <= 24 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[1][4] += 1 if 14 <= age[i] <= 24 and hoursWK[i] > 59 else 0
+
+        ahTableData[2][0] = '25-34'
+        ahTableData[2][1] += 1 if 25 <= age[i] <= 34 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[2][2] += 1 if 25 <= age[i] <= 34 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[2][3] += 1 if 25 <= age[i] <= 34 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[2][4] += 1 if 25 <= age[i] <= 34 and hoursWK[i] > 59 else 0
+
+        ahTableData[3][0] = '35-44'
+        ahTableData[3][1] += 1 if 35 <= age[i] <= 44 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[3][2] += 1 if 35 <= age[i] <= 44 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[3][3] += 1 if 35 <= age[i] <= 44 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[3][4] += 1 if 35 <= age[i] <= 44 and hoursWK[i] > 59 else 0
+
+        ahTableData[4][0] = '45-54'
+        ahTableData[4][1] += 1 if 45 <= age[i] <= 54 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[4][2] += 1 if 45 <= age[i] <= 54 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[4][3] += 1 if 45 <= age[i] <= 54 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[4][4] += 1 if 45 <= age[i] <= 54 and hoursWK[i] > 59 else 0
+
+        ahTableData[5][0] = '55-64'
+        ahTableData[5][1] += 1 if 55 <= age[i] <= 64 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[5][2] += 1 if 55 <= age[i] <= 64 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[5][3] += 1 if 55 <= age[i] <= 64 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[5][4] += 1 if 55 <= age[i] <= 64 and hoursWK[i] > 59 else 0
+
+        ahTableData[6][0] = '65-74'
+        ahTableData[6][1] += 1 if 65 <= age[i] <= 74 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[6][2] += 1 if 65 <= age[i] <= 74 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[6][3] += 1 if 65 <= age[i] <= 74 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[6][4] += 1 if 65 <= age[i] <= 74 and hoursWK[i] > 59 else 0
+
+        ahTableData[7][0] = '75-84'
+        ahTableData[7][1] += 1 if 75 <= age[i] <= 84 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[7][2] += 1 if 75 <= age[i] <= 84 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[7][3] += 1 if 75 <= age[i] <= 84 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[7][4] += 1 if 75 <= age[i] <= 84 and hoursWK[i] > 59 else 0
+
+        ahTableData[8][0] = '85-94'
+        ahTableData[8][1] += 1 if 85 <= age[i] <= 94 and 0 <= hoursWK[i] <= 19 else 0
+        ahTableData[8][2] += 1 if 85 <= age[i] <= 94 and 20 <= hoursWK[i] <= 39 else 0
+        ahTableData[8][3] += 1 if 85 <= age[i] <= 94 and 40 <= hoursWK[i] <= 59 else 0
+        ahTableData[8][4] += 1 if 85 <= age[i] <= 94 and hoursWK[i] > 59 else 0
+
+    print(tabulate(ahTableData, headers=['Hours', '0-19', '20-39', '40-59', 'More Hours'], tablefmt='fancy_grid'))
+
+
+
+def showFaseII():
+    raceSexTable()
+    ageHoursWKTable()
+
+
 
 def mainMenu():    
     ans = 0
     options = [
-                    '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- usCitizen', '- Health Insurance', '- languaje', '- Classic Data', '- Fase I', '- Exit'
+                    '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- usCitizen', '- Health Insurance', '- languaje', '- Classic Data', '- Fase I', '- Fase II', '- Exit'
                 ]
-    while(ans < 12):
+    while(ans < 13):
         print("\n================================================================")
         print("========================== MAIN MENU ===========================")
         print("================================================================")
@@ -477,7 +582,8 @@ def mainMenu():
         elif ans == 11:
             showFaseI()
         elif ans == 12:
-            print("Go0dbyE HUmAn $%&/%##")
+            showFaseII()
+    print("=======================CLOSED=======================")
 
 
 
