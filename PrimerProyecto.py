@@ -119,7 +119,7 @@ def median(table, n, a):
             break
     li = table[index].li
     fi = table[index].fi
-    Fi = 0 if(index < 0) else table[index-1].fa
+    Fi = 0 if(index == 0) else table[index-1].fa
     return li + (((temp - Fi) / fi) * a)
 
 def modas(table, a):
@@ -135,7 +135,7 @@ def modas(table, a):
                 print("Moda #" + str(len(result) + 1) + ": Error Division por 0 por lo que se usara 1 en d1/(d1+d2)")
                 result.append(row.li + a)
             else:
-                result.append(row.li + ((d1 / (d1 + d2)) * a))
+                result.append(format((row.li + ((d1 / (d1 + d2)) * a)), '.2f'))
     return result
     
 def percentil(table, n, a, k, div):
@@ -166,15 +166,17 @@ def showGraph(data, bins, title):
     plt.show()
 
 
-def fillTable(data, title):
+def fillTable(data, title, ansS):
     table = []
-    ans = "0"
+    ans = ansS
     n = len(data)
     xMax = max(data)
     xMin = min(data)
-    r = xMax - xMin
+    r = (xMax - xMin) + 1
     k = round(1 + 3.3*math.log10(n))
-    a = round(r / k)
+    a = round(r / k) + 1
+    print(a)
+    print(k)
     tableClasses(table, xMin, k, a)
     absoluteFrequency(table, data)
     acumulatedFrequency(table, k)
@@ -205,7 +207,7 @@ def fillTable(data, title):
         optionIndex = cutie.select(options)
         ans = str(optionIndex + 1)
         if ans == "1":
-            data = []
+            tableData = []
             print("\n/------------------------------------------------------------------------------------------/")
             for row in table:
                 rowData = []
@@ -219,8 +221,8 @@ def fillTable(data, title):
                 rowData.append(format(row.xi, '.2f'))
                 rowData.append(format(row.fixi, '.2f'))
                 rowData.append(format(row.fixi2, '.2f'))
-                data.append(rowData)
-            print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='fancy_grid'))
+                tableData.append(rowData)
+            print(tabulate(tableData, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='fancy_grid'))
             # print(tabulate(data, headers=['Clases', 'fi', 'fa', 'fir', 'fir%', 'far', 'far%', 'xi', 'fixi', 'fixi2'], tablefmt='github'))
             print("/------------------------------------------------------------------------------------------/")
                             
@@ -247,7 +249,7 @@ def fillTable(data, title):
         elif ans == "5":
             print("\n/---------------------------------/")
             for i, mode in enumerate(mo):
-                print(f"Mode #{i+1}: {format(mode, '.2f')}")
+                print(f"Mode #{i+1}: {mode}")
             print("/---------------------------------/")
 
         elif ans == "6":
@@ -324,6 +326,11 @@ def fillTable(data, title):
             plt.close('all')
             showGraph(data, bins, title)
 
+    return [percentil(table, n, a, 1, 4), percentil(table, n, a, 2, 4), percentil(table, n, a, 3, 4), percentil(table, n, a, 4, 4),
+            x, mo, me,
+            s2, s, cv*100, interquartileRange(table, n, a),
+            c, As]
+
 def sexGraph():
     plt.close('all')
     male = sex.count(0)
@@ -348,15 +355,99 @@ def marriedGraph():
     plt.legend()
     plt.show()
 
-def mainMenu():
-    
-    
+
+def raceGraph():
+    plt.close('all')
+    white =  race.count('white')
+    black =  race.count('black')
+    asian =  race.count('asian')
+    other =  race.count('other')
+    labels = ['White', 'Black', 'Asian', 'Other']
+    raceData = np.array([white, black, asian, other])
+    colors = ["gray", "black", "yellow", "purple"]
+    plt.pie(raceData, labels=labels, colors=colors)
+    plt.title("Race Pie Graphic")
+    plt.legend()
+    plt.show()
+
+def usCitizenGraph():
+    plt.close('all')
+    yes =  race.count('white')
+    no =  race.count('black')
+    labels = ['Yes', 'No']
+    citizenData = np.array([yes, no])
+    colors = ["blue", "black"]
+    plt.pie(citizenData, labels=labels, colors=colors)
+    plt.title("US Citizenship Pie Graphic")
+    plt.legend()
+    plt.show()
+
+def healthInsurenceGraph():
+    plt.close('all')
+    yes =  healthInsurance.count(1)
+    no =  healthInsurance.count(0)
+    labels = ['Yes', 'No']
+    heInData = np.array([yes, no])
+    colors = ["blue", "black"]
+    plt.pie(heInData, labels=labels, colors=colors)
+    plt.title("Health Insurence Pie Graphic")
+    plt.legend()
+    plt.show()
+
+def languajeGraph():
+    plt.close('all')
+    yes =  language.count(1)
+    no =  language.count(0)
+    labels = ['Yes', 'No']
+    heInData = np.array([yes, no])
+    colors = ["blue", "black"]
+    plt.pie(heInData, labels=labels, colors=colors)
+    plt.title("Health Insurence Pie Graphic")
+    plt.legend()
+    plt.show()
+
+def getTableDataInfo(data):
+    tableData = []
+    tableData.append(['Position', ''])
+    tableData.append(['Q1', format(data[0], '.2f')])
+    tableData.append(['Q2', format(data[1], '.2f')])
+    tableData.append(['Q3', format(data[2], '.2f')])
+    tableData.append(['Q4', format(data[3], '.2f')])
+    tableData.append(['Central', ''])
+    tableData.append(['Arithm Media', format(data[4], '.2f')])
+    tableData.append(['Mode', data[5]])
+    tableData.append(['Median', format(data[6], '.2f')])
+    tableData.append(['Variabilability', ''])
+    tableData.append(['Variance', format(data[7], '.2f')])
+    tableData.append(['Typical Diviation', format(data[8], '.2f')])
+    tableData.append(['CV', format(data[9], '.2f')])
+    tableData.append(['IQR', format(data[10], '.2f')])
+    tableData.append(['Form', ''])
+    tableData.append(['Kurtosis', format(data[11], '.4f')])
+    tableData.append(['As', format(data[12], '.4f')])
+    return tableData
+
+def showFaseI():
+    ageData = fillTable(age, "AGE", "16")
+    incomeData = fillTable(income, "INCOME", "16")
+    hoursWKData = fillTable(hoursWK, "HOURS WORKING", "16")
+
+    ageTableData = getTableDataInfo(ageData)
+    incomeTableData = getTableDataInfo(incomeData)
+    hoursWKTableData = getTableDataInfo(hoursWKData)
+
+    print(tabulate(ageTableData, headers=['Variable: Age', ''], tablefmt='fancy_grid'))
+    print(tabulate(incomeTableData, headers=['Variable: Income ', ''], tablefmt='fancy_grid'))
+    print(tabulate(hoursWKTableData, headers=['Variable: Hours WK ', ''], tablefmt='fancy_grid'))
+
+
+
+def mainMenu():    
     ans = 0
     options = [
-        '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- usCitizen', '- Health Insurance', '- languaje', '- Classic Data', '- Exit'
-
-    ]
-    while(ans < 11):
+                    '- Sex', '- Age', '- Married', '- Income', '- Hours WK', '- Race', '- usCitizen', '- Health Insurance', '- languaje', '- Classic Data', '- Fase I', '- Exit'
+                ]
+    while(ans < 12):
         print("\n================================================================")
         print("========================== MAIN MENU ===========================")
         print("================================================================")
@@ -366,24 +457,26 @@ def mainMenu():
         if ans == 1:
             sexGraph()
         elif ans == 2:
-            fillTable(age, "AGE")
+            fillTable(age, "AGE", "0")
         elif ans == 3:
             marriedGraph()
         elif ans == 4:
-            fillTable(income, "INCOME")
+            fillTable(income, "INCOME", "0")
         elif ans == 5:
-            fillTable(hoursWK, "HOURS WORKING")
+            fillTable(hoursWK, "HOURS WORKING", "0")
         elif ans == 6:
-            print("Work in Progress")
+            raceGraph()
         elif ans == 7:
-            print("Work in Progress")
+            usCitizenGraph()
         elif ans == 8:
-            print("Work in Progress")
+            healthInsurenceGraph()
         elif ans == 9:
-            print("Work in Progress")
+            languajeGraph()
         elif ans == 10:
             fillTable(testData, "OLD DATA")
         elif ans == 11:
+            showFaseI()
+        elif ans == 12:
             print("Go0dbyE HUmAn $%&/%##")
 
 
@@ -398,6 +491,7 @@ race = []
 usCitizen = []
 healthInsurance = []
 language = []
+
 
 if __name__ == "__main__":
     with open("Datosproyecto2024.csv", newline="") as dataBase:
