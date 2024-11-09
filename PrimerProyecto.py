@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 from tabulate import tabulate
 import cutie
 import numpy as np
+from scipy.stats import norm
+import random
+import seaborn as sns
 
 class tableRow():
     def __init__(self):
@@ -162,10 +165,19 @@ def curtosis(table, n, a):
     return ((percentil(table, n, a, 75, 100) - percentil(table, n, a, 25, 100)) / (percentil(table, n, a, 90, 100) - percentil(table, n, a, 10, 100))) * 0.5
 
 def showGraph(data, bins, title):
-    plt.hist(data, bins=bins, edgecolor='yellow', color='red')
+    # plt.hist(data, bins=bins, edgecolor='yellow', color='red')
+    # plt.plot(bins, '--', color='black')
+    sns.histplot(data, bins=bins, kde=True, edgecolor='yellow', color='red')
     plt.title(f"{title} Histogram \n", fontweight='bold')
     plt.show()
 
+def getDispersionType(c):
+    if c == 0:
+        return 'Mesocurtica'
+    elif c > 0:
+        return 'Platicurtica'
+    else:
+        return 'Leptocurtica'
 
 def fillTable(data, title, ansS):
     table = []
@@ -177,7 +189,6 @@ def fillTable(data, title, ansS):
     k = round(1 + 3.3*math.log10(n))
     # a = round(r / k) + 1
     a = math.ceil(r / k)
-    print(a)
     tableClasses(table, xMin, k, a)
     absoluteFrequency(table, data)
     acumulatedFrequency(table, k)
@@ -284,7 +295,7 @@ def fillTable(data, title, ansS):
             except: 
                 print("Error: Not a Integer Value") 
                 break
-            if 0 < qk < 4:
+            if 0 < qk <= 4:
                 print(f"Quartile {qk}: {format(percentil(table, n, a, qk, 4), '.2f')}")
             else:
                 print("Error: Out of Range")
@@ -317,7 +328,8 @@ def fillTable(data, title, ansS):
 
         elif ans == "14":
             print("\n/---------------------------------/")
-            print(f"Kurtosis: {format(c, '.4f')}")   
+            print(f"Kurtosis: {format(c, '.4f')}")
+            print(f"{getDispersionType(c)}")
             print("/---------------------------------/")
 
         elif ans == "15":
@@ -330,12 +342,13 @@ def fillTable(data, title, ansS):
     return [percentil(table, n, a, 1, 4), percentil(table, n, a, 2, 4), percentil(table, n, a, 3, 4), percentil(table, n, a, 4, 4),
             x, mo, me,
             s2, s, cv*100, interquartileRange(table, n, a),
-            c, As]
+            c, As,
+            n]
 
 def sexGraph():
     plt.close('all')
-    male = sex.count(0)
-    female = sex.count(1)
+    male = sex.count(1)
+    female = sex.count(0)
     labels = ['Male','Female']
     sexData = np.array([male, female])
     colors = ["#52a4ec", "#ea74f3"]
@@ -350,7 +363,7 @@ def marriedGraph():
     marriedC = married.count(1)
     labels = ['Single','Married']
     sexData = np.array([single, marriedC])
-    colors = ["#52a4ec", "#ea74f3"]
+    colors = ["#cec284", "#a52a2a"]
     plt.pie(sexData, labels=labels, colors=colors)
     plt.title("Married Pie Graphic")
     plt.legend()
@@ -373,10 +386,10 @@ def raceGraph():
 
 def usCitizenGraph():
     plt.close('all')
-    yes =  race.count('white')
-    no =  race.count('black')
-    labels = ['Yes', 'No']
-    citizenData = np.array([yes, no])
+    citizen =  usCitizen.count(1)
+    notCitizen =  usCitizen.count(0)
+    labels = ['Citizen', 'Not Citizen']
+    citizenData = np.array([citizen, notCitizen])
     colors = ["blue", "black"]
     plt.pie(citizenData, labels=labels, colors=colors)
     plt.title("US Citizenship Pie Graphic")
@@ -387,23 +400,23 @@ def healthInsurenceGraph():
     plt.close('all')
     yes =  healthInsurance.count(1)
     no =  healthInsurance.count(0)
-    labels = ['Yes', 'No']
+    labels = ['Have Health Insurance', 'No Health Insurance']
     heInData = np.array([yes, no])
-    colors = ["blue", "black"]
+    colors = ["#5ABA4A", "#F7CC3B"]
     plt.pie(heInData, labels=labels, colors=colors)
     plt.title("Health Insurence Pie Graphic")
     plt.legend()
     plt.show()
 
-def languajeGraph():
+def languageGraph():
     plt.close('all')
     yes =  language.count(1)
     no =  language.count(0)
-    labels = ['Yes', 'No']
+    labels = ['English Spoken at Home', 'Other']
     heInData = np.array([yes, no])
-    colors = ["blue", "black"]
+    colors = ["#efab0f", "#6814a2"]
     plt.pie(heInData, labels=labels, colors=colors)
-    plt.title("Health Insurence Pie Graphic")
+    plt.title("Language Pie Graphic")
     plt.legend()
     plt.show()
 
@@ -420,7 +433,7 @@ def getTableDataInfo(data):
     tableData.append(['Median', format(data[6], '.2f')])
     tableData.append(['Variabilability', ''])
     tableData.append(['Variance', format(data[7], '.2f')])
-    tableData.append(['Typical Diviation', format(data[8], '.2f')])
+    tableData.append(['Standard Diviation', format(data[8], '.2f')])
     tableData.append(['CV', format(data[9], '.2f')])
     tableData.append(['IQR', format(data[10], '.2f')])
     tableData.append(['Form', ''])
@@ -436,10 +449,19 @@ def showFaseI():
     ageTableData = getTableDataInfo(ageData)
     incomeTableData = getTableDataInfo(incomeData)
     hoursWKTableData = getTableDataInfo(hoursWKData)
-
+    print("\n------------------------------------------------------------")
+    print("-------------------------- FASE I --------------------------")
+    print("------------------------------------------------------------")
+    print("\n/------------------------------------------------------------------------------------------/")
+    print('========== AGE ==========')
     print(tabulate(ageTableData, headers=['Variable: Age', ''], tablefmt='fancy_grid'))
+    print("/------------------------------------------------------------------------------------------/")
+    print('========== INCOME ==========')
     print(tabulate(incomeTableData, headers=['Variable: Income ', ''], tablefmt='fancy_grid'))
+    print("/------------------------------------------------------------------------------------------/")
+    print('========== HOURS WK ==========')
     print(tabulate(hoursWKTableData, headers=['Variable: Hours WK ', ''], tablefmt='fancy_grid'))
+    print("/------------------------------------------------------------------------------------------/")
 
 
 def raceSexTable():
@@ -457,25 +479,35 @@ def raceSexTable():
     maleOther = 0
     maleTotal = 0
 
-    for i in range(2000):
-        femAsian += 1 if sex[i] == 1 and race[i] == 'asian' else 0
-        femBlack += 1 if sex[i] == 1 and race[i] == 'black' else 0
-        femWhite += 1 if sex[i] == 1 and race[i] == 'white' else 0
-        femOther += 1 if sex[i] == 1 and race[i] == 'other' else 0
-        femTotal += 1 if sex[i] == 1 else 0
+    for i in range(len(sex)):
+        femAsian += 1 if sex[i] == 0 and race[i] == 'asian' else 0
+        femBlack += 1 if sex[i] == 0 and race[i] == 'black' else 0
+        femWhite += 1 if sex[i] == 0 and race[i] == 'white' else 0
+        femOther += 1 if sex[i] == 0 and race[i] == 'other' else 0
+        femTotal += 1 if sex[i] == 0 else 0
 
-        maleAsian += 1 if sex[i] == 0 and race[i] == 'asian' else 0
-        maleBlack += 1 if sex[i] == 0 and race[i] == 'black' else 0
-        maleWhite += 1 if sex[i] == 0 and race[i] == 'white' else 0
-        maleOther += 1 if sex[i] == 0 and race[i] == 'other' else 0
-        maleTotal += 1 if sex[i] == 0 else 0
+        maleAsian += 1 if sex[i] == 1 and race[i] == 'asian' else 0
+        maleBlack += 1 if sex[i] == 1 and race[i] == 'black' else 0
+        maleWhite += 1 if sex[i] == 1 and race[i] == 'white' else 0
+        maleOther += 1 if sex[i] == 1 and race[i] == 'other' else 0
+        maleTotal += 1 if sex[i] == 1 else 0
     
     srTableData.append(['sex'])
     srTableData.append(['F', femAsian, femBlack, femWhite, femOther, femTotal])
     srTableData.append(['M', maleAsian, maleBlack, maleWhite, maleOther, maleTotal])
     srTableData.append(['Total', (femAsian + maleAsian), (femBlack + maleBlack), (femWhite + maleWhite), (femOther + maleOther), (femTotal + maleTotal)])
-
+    
     print(tabulate(srTableData, headers=['Race', 'Asian', 'Black', 'White', 'Other', 'Total'], tablefmt='fancy_grid'))
+
+    objList = [
+                {'name': 'Female Asian', 'value':femAsian}, {'name':'Female Black', 'value':femBlack}, {'name': 'Female White', 'value': femWhite}, {'name':'Female Other', 'value':femOther}, 
+                {'name': 'Male Asian', 'value': maleAsian}, {'name': 'Male Black', 'value': maleBlack}, {'name': 'Male White', 'value': maleWhite}, {'name': 'Male Other', 'value': maleOther}
+            ]
+
+    maxObj = max(objList, key=lambda i: i['value'])
+    print(f"\nBiggest Percentage:  {maxObj['name']} {(maxObj['value'] / len(sex) )* 100}%\n")
+
+
 
 def ageHoursWKTable():
     ahTableData = [['Age']]
@@ -488,7 +520,7 @@ def ageHoursWKTable():
     ahTableData.append(['', 0, 0, 0, 0])
     ahTableData.append(['', 0, 0, 0, 0])
 
-    for i in range(2000):
+    for i in range(len(age)):
         ahTableData[1][0] = '14-24'
         ahTableData[1][1] += 1 if 14 <= age[i] <= 24 and 0 <= hoursWK[i] <= 19 else 0
         ahTableData[1][2] += 1 if 14 <= age[i] <= 24 and 20 <= hoursWK[i] <= 39 else 0
@@ -539,11 +571,129 @@ def ageHoursWKTable():
 
     print(tabulate(ahTableData, headers=['Hours', '0-19', '20-39', '40-59', 'More Hours'], tablefmt='fancy_grid'))
 
+    objList = [
+        {'name': 'Edad: 14-24 Horas: 0-19', 'value': ahTableData[1][1]}, {'name': 'Edad: 14-24 Horas: 20-39', 'value': ahTableData[1][2]}, {'name': 'Edad: 14-24 Horas: 40-59', 'value': ahTableData[1][3]}, {'name': 'Edad: 14-24 Horas: Mas Horas', 'value': ahTableData[1][4]},
+        {'name': 'Edad: 25-34 Horas: 0-19', 'value': ahTableData[2][1]}, {'name': 'Edad: 25-34 Horas: 1-2', 'value': ahTableData[2][2]}, {'name': 'Edad: 25-34 Horas: 40-59', 'value': ahTableData[2][3]}, {'name': 'Edad: 25-34 Horas: Mas Horas', 'value': ahTableData[2][4]},
+        {'name': 'Edad: 35-44 Horas: 0-19', 'value': ahTableData[3][1]}, {'name': 'Edad: 35-44 Horas: 1-2', 'value': ahTableData[3][2]}, {'name': 'Edad: 35-44 Horas: 40-59', 'value': ahTableData[3][3]}, {'name': 'Edad: 35-44 Horas: Mas Horas', 'value': ahTableData[3][4]},
+        {'name': 'Edad: 45-54 Horas: 0-19', 'value': ahTableData[4][1]}, {'name': 'Edad: 45-54 Horas: 1-2', 'value': ahTableData[4][2]}, {'name': 'Edad: 45-54 Horas: 40-59', 'value': ahTableData[4][3]}, {'name': 'Edad: 45-54 Horas: Mas Horas', 'value': ahTableData[4][4]},
+        {'name': 'Edad: 55-64 Horas: 0-19', 'value': ahTableData[5][1]}, {'name': 'Edad: 55-64 Horas: 20-39', 'value': ahTableData[5][2]}, {'name': 'Edad: 55-64 Horas: 40-59', 'value': ahTableData[5][3]}, {'name': 'Edad: 55-64 Horas: Mas Horas', 'value': ahTableData[5][4]},
+        {'name': 'Edad: 65-74 Horas: 0-19', 'value': ahTableData[6][1]}, {'name': 'Edad: 65-74 Horas: 1-2', 'value': ahTableData[6][2]}, {'name': 'Edad: 65-74 Horas: 40-59', 'value': ahTableData[6][3]}, {'name': 'Edad: 65-74 Horas: Mas Horas', 'value': ahTableData[6][4]},
+        {'name': 'Edad: 75-84 Horas: 0-19', 'value': ahTableData[7][1]}, {'name': 'Edad: 75-84 Horas: 1-2', 'value': ahTableData[7][2]}, {'name': 'Edad: 75-84 Horas: 40-59', 'value': ahTableData[7][3]}, {'name': 'Edad: 75-84 Horas: Mas Horas', 'value': ahTableData[7][4]},
+        {'name': 'Edad: 85-94 Horas: 0-19', 'value': ahTableData[8][1]}, {'name': 'Edad: 85-94 Horas: 1-2', 'value': ahTableData[8][2]}, {'name': 'Edad: 85-94 Horas: 40-59', 'value': ahTableData[8][3]}, {'name': 'Edad: 85-94 Horas: Mas Horas', 'value': ahTableData[8][4]}
+    ]
+
+    maxObj = max(objList, key=lambda i: i['value'])
+    print(f"\nBiggest Percentage:  {maxObj['name']} {(maxObj['value'] / len(age) )* 100}%\n")
+
+def ansQuestions(x, op, data, interval):
+    res = fillTable(data, "test", "16")
+    x = x
+    u = res[4]
+    sigma = res[8]
+    n = len(data)
+
+    # z = (x - u) / (sigma/(math.sqrt(n)))
+    z = (x - u) / sigma
+    p = float(norm.cdf(z))
+
+
+    if op == 0:
+        return format(p * 100, '.2f')
+    elif op == 1:
+        return format((1 - p) * 100, '.2f')
+    elif op == 2:
+        z1 = (interval[0] - u) / sigma
+        z2 = (interval[1] - u) / sigma
+        p1 = float(norm.cdf(z1))
+        p2 = float(norm.cdf(z2))
+        return format((p2 - p1)* 100, '.2f')
+    else:
+        return 0
+
+
+def incomeRandomTable():
+    g1 = random.sample(income, k=500)
+    g2 = random.sample(income, k=500)
+    g3 = random.sample(income, k=400)
+
+    g1Data = fillTable(g1, '', '16')
+    g2Data = fillTable(g2, '', '16')
+    g3Data = fillTable(g3, '', '16')
+
+    tableData = []
+    tableData.append(['G1', len(g1), g1Data[4], g1Data[8]])
+    tableData.append(['G2', len(g2), g2Data[4], g2Data[8]])
+    tableData.append(['G3', len(g3), g3Data[4], g3Data[8]])
+    print(tabulate(tableData, headers=['', 'Number of Elements', 'Arithm Mean', 'Standard Deviation'], tablefmt='fancy_grid'))
+    print('')
+    print(f'1)En cuanto a la variable salario, seleccionar G1 y G2, contrastar si dichas poblaciones se comportan iguales. Justifique su respuesta, utilizando un nivel de significancia del 95%')
+    print(f'\n{hipotesis(g1Data, g2Data, 1.65, 0)}')
+    print('')
+    print(f'2)Podemos decidir si se debería comparar G2 y G3. Si los salarios en ambos grupos no se diferencian entre sí, con un nivel de significancia del 99%.')
+    print(f'\n{hipotesis(g2Data, g3Data, 2.33, 0)}')
+    
+
+
+def hipotesis(data1, data2, sig, op):
+    zTab = sig
+    sigmaX = math.sqrt((data1[8]**2 / data1[13]) + (data2[8]**2 / data2[13]))
+    zCalc = (data1[4] - data2[4]) / sigmaX
+    if op == 0:
+        if (zTab * -1) <= zCalc <= zTab:
+            return f'Debido a que -zTab < zCalc < zTab ({(zTab * -1)} < {format(zCalc, '.2f')} < {zTab}), Aceptamos Ho'
+        elif zCalc > zTab:
+            return f'Debido a que zCalc > zTab ({format(zCalc, '.2f')} > {zTab}), Rechazamos Ho y Aceptamos Ha'
+        else:
+            return f'Debido a que zCalc < -zTab ({(zTab * -1)} > {format(zCalc, '.2f')}), Rechazamos Ho y Aceptamos Ha'
+    else:
+        if zCalc < zTab:
+            return f'Debido a que zCalc < zTab ({format(zCalc, '.2f')} < {zTab}), Aceptamos Ho'
+        else:
+            return f'Debido a que zCalc > zTab ({format(zCalc, '.2f')} > {zTab}), Rechazamos Ho y Aceptamos Ha'
+
+
+def ageRandomTable():
+    g1 = random.sample(age, k=300)
+    g2 = random.sample(age, k=400)
+
+    g1Data = fillTable(g1, '', '16')
+    g2Data = fillTable(g2, '', '16')
+
+    tableData = []
+    tableData.append(['G1', len(g1), g1Data[4], g1Data[8]])
+    tableData.append(['G2', len(g2), g2Data[4], g2Data[8]])
+    print(tabulate(tableData, headers=['', 'Number of Elements', 'Arithm Mean', 'Standard Deviation'], tablefmt='fancy_grid'))
+    print('')
+    print('¿se puede contrastar que los dos grupos el primer grupo es mayor que el segundo? con un nivel de significancia 90%')
+    print(f'\n{hipotesis(g1Data, g2Data, 1.29, 1)}')
+    print('')
 
 
 def showFaseII():
+    print("\n-----------------------------------------------------------")
+    print("-------------------------- FASE II ------------------------")
+    print("-----------------------------------------------------------")
+    print("\n/------------------------------------------------------------------------------------------/")
+    print('========== PROBABILITY QUESTIONS ==========')
+    print(f'Pregunta 1: Cual es la probabilidad de que el salario sea mayor que 44? {ansQuestions(44, 1, income, None)}%\n')
+    print(f'Pregunta 2: Cual es la probabilidad de que el salario de una persona se encuentre entre 47 y 49? {ansQuestions(0, 2, income, [47,49])}%\n')
+    print(f'Pregunta 3: Cual es la probabilidad de que se encuentre una persona con una edad menor de 49 años? {ansQuestions(49, 0, age, None)}%\n')
+    print(f'Pregunta 4: Cual es la probabilidad de que se encuentre una persona con una edad entre 46 y 50 años? {ansQuestions(0, 2, age, [46,50])}%\n')
+    print(f'Pregunta 5: Cual es la probabilidad de que las horas trabajadas sea mayor que 29,5 horas? {ansQuestions(29.5, 1, hoursWK, None)}%\n')
+    print(f'Pregunta 6: Cual es la probabilidad de que las horas trabajadas sea menor que 26,5 horas? {ansQuestions(26.5, 1, hoursWK, None)}%\n')
+    print("/------------------------------------------------------------------------------------------/\n")
+    print('========== RACE SEX TABLE ==========')
     raceSexTable()
+    print("/------------------------------------------------------------------------------------------/\n")
+    print('========== AGE HOURS WK TABLE ==========')
     ageHoursWKTable()
+    print("/------------------------------------------------------------------------------------------/\n")
+    print('========== INCOME RANDOM SAMPLES TABLE AND QUESTIONS ==========')
+    incomeRandomTable()
+    print("/------------------------------------------------------------------------------------------/\n")
+    print('========== AGE RANDOM SAMPLES TABLE AND QUESTIONS ==========')
+    ageRandomTable()
+    print("/------------------------------------------------------------------------------------------/\n")
 
 
 
@@ -576,16 +726,14 @@ def mainMenu():
         elif ans == 8:
             healthInsurenceGraph()
         elif ans == 9:
-            languajeGraph()
+            languageGraph()
         elif ans == 10:
-            fillTable(testData, "OLD DATA")
+            fillTable(testData, "OLD DATA", "0")
         elif ans == 11:
             showFaseI()
         elif ans == 12:
             showFaseII()
     print("=======================CLOSED=======================")
-
-
 
 
 sex = []
